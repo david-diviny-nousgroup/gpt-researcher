@@ -18,27 +18,31 @@ class PublisherAgent:
 
     def generate_layout(self, research_state: dict):
         sections = '\n\n'.join(f"{value}"
-                                 for subheader in research_state.get("research_data")
-                                 for key, value in subheader.items())
-        references = '\n'.join(f"{reference}" for reference in research_state.get("sources"))
+                            for subheader in research_state.get("research_data")
+                            for key, value in subheader.items())
+        references = '\n'.join(f"- {reference}" for reference in research_state.get("sources"))
         headers = research_state.get("headers")
+
         layout = f"""# {headers.get('title')}
-#### {headers.get("date")}: {research_state.get('date')}
+        #### {headers.get("date")}: {research_state.get('date')}
 
-## {headers.get("introduction")}
-{research_state.get('introduction')}
+        ## Executive Summary
 
-## {headers.get("table_of_contents")}
-{research_state.get('table_of_contents')}
+        {research_state.get('executive_summary')}
 
-{sections}
+        ## Discussion
 
-## {headers.get("conclusion")}
-{research_state.get('conclusion')}
+        {research_state.get('discussion')}
 
-## {headers.get("references")}
-{references}
-"""
+        {sections}
+
+        ## Implications
+
+        {research_state.get('implications')}
+
+        ## Sources
+        {references}
+        """
         return layout
 
     async def write_report_by_formats(self, layout:str, publish_formats: dict):

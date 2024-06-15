@@ -27,7 +27,6 @@ class EditorAgent:
 
         initial_research = research_state.get("initial_research")
         task = research_state.get("task")
-        max_sections = task.get("max_sections")
         prompt = [{
             "role": "system",
             "content": "You are a research director. Your goal is to oversee the research project"
@@ -38,10 +37,9 @@ class EditorAgent:
                        f"Research summary report: '{initial_research}'\n\n"
                        f"Your task is to generate an outline of sections headers for the research project"
                        f" based on the research summary report above.\n"
-                       f"You must generate a maximum of {max_sections} section headers.\n"
                        f"You must focus ONLY on related research topics for subheaders and do NOT include introduction, conclusion and references.\n"
                        f"You must return nothing but a JSON with the fields 'title' (str) and "
-                       f"'sections' (maximum {max_sections} section headers) with the following structure: "
+                       f"'sections with the following structure: "
                        f"'{{title: string research title, date: today's date, "
                        f"sections: ['section header 1', 'section header 2', 'section header 3' ...]}}.\n "
         }]

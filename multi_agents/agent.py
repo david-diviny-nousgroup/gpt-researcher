@@ -2,7 +2,6 @@ from agents import ChiefEditorAgent
 
 chief_editor = ChiefEditorAgent({
   "query": "Is AI in a hype cycle?",
-  "max_sections": 3,
   "follow_guidelines": False,
   "model": "gpt-4o",
   "guidelines": [

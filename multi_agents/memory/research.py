@@ -11,9 +11,9 @@ class ResearchState(TypedDict):
     title: str
     headers: dict
     date: str
-    table_of_contents: str
-    introduction: str
-    conclusion: str
+    executive_summary: str
+    discussion: str
+    implications:str
     sources: List[str]
     report: str
 

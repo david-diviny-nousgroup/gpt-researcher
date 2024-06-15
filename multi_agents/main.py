@@ -9,7 +9,7 @@ if os.environ.get("LANGCHAIN_API_KEY"):
     os.environ["LANGCHAIN_TRACING_V2"] = "true"
 load_dotenv()
 
-
+ 
 def open_task():
     with open('task.json', 'r') as f:
         task = json.load(f)
@@ -30,3 +30,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+

@@ -5,9 +5,9 @@ from .utils.llms import call_model
 
 sample_json = """
 {
-  "table_of_contents": A table of contents in markdown syntax (using '-') based on the research headers and subheaders,
-  "introduction": An indepth introduction to the topic in markdown syntax and hyperlink references to relevant sources,
-  "conclusion": A conclusion to the entire research based on all research data in markdown syntax and hyperlink references to relevant sources,
+  "executive_summary": An executive summary of the key findings and implications from the research in markdown syntax and hyperlink references to relevant sources,
+  "discussion": An in-depth discussion of the research findings divided into subsections based on key themes, in markdown syntax with hyperlink references,
+  "implications": A section discussing the implications of the research findings for relevant stakeholders, in markdown syntax with references,
   "sources": A list with strings of all used source links in the entire research data in markdown syntax and apa citation format. For example: ['-  Title, year, Author [source url](source)', ...]
 }
 """
@@ -21,10 +21,10 @@ class WriterAgent:
         return {
             "title": research_state.get("title"),
             "date": "Date",
-            "introduction": "Introduction",
-            "table_of_contents": "Table of Contents",
-            "conclusion": "Conclusion",
-            "references": "References"
+            "executive_summary": "Executive Summary", 
+            "discussion": "Discussion",
+            "implications": "Implications",
+            "sources": "Sources"
         }
 
     def write_sections(self, research_state: dict):
@@ -36,26 +36,25 @@ class WriterAgent:
 
         prompt = [{
             "role": "system",
-            "content": "You are a research writer. Your sole purpose is to write a well-written "
-                       "research reports about a "
-                       "topic based on research findings and information.\n "
+            "content": "You are a research writer. Your sole purpose is to write well-structured, in-depth research reports based on provided research findings and information.\n "
         }, {
             "role": "user",
-            "content": f"Today's date is {datetime.now().strftime('%d/%m/%Y')}\n."
+            "content": f"Today's date is {datetime.now().strftime('%d/%m/%Y')}\n."  
                        f"Query or Topic: {query}\n"
                        f"Research data: {str(data)}\n"
-                       f"Your task is to write an in depth, well written and detailed "
-                       f"introduction and conclusion to the research report based on the provided research data. "
+                       f"Your task is to write a professional research report based on the provided research data, including: "
+                       f"an executive summary of key findings, a discussion of the findings organized by theme, " 
+                       f"implications for stakeholders. "
                        f"Do not include headers in the results.\n"
-                       f"You MUST include any relevant sources to the introduction and conclusion as markdown hyperlinks -"
+                       f"You MUST include any relevant sources as markdown hyperlinks - "
                        f"For example: 'This is a sample text. ([url website](url))'\n\n"
-                       f"{f'You must follow the guidelines provided: {guidelines}' if follow_guidelines else ''}\n"
-                       f"You MUST return nothing but a JSON in the following format (without json markdown):\n"
+                       f"{f'You must follow the provided content and structure guidelines: {guidelines}' if follow_guidelines else ''}\n" 
+                       f"Return the report sections in JSON format ONLY (without json markdown):\n"
                        f"{sample_json}\n\n"
 
         }]
 
-        response = call_model(prompt, task.get("model"), max_retries=2, response_format='json')
+        response = call_model(prompt, task.get("model"), max_retries=2, response_format='json')  
         return json.loads(response)
 
     def revise_headers(self, task: dict, headers: dict):
@@ -64,10 +63,10 @@ class WriterAgent:
             "content": """You are a research writer. 
 Your sole purpose is to revise the headers data based on the given guidelines."""
         }, {
-            "role": "user",
-            "content": f"""Your task is to revise the given headers JSON based on the guidelines given.
-You are to follow the guidelines but the values should be in simple strings, ignoring all markdown syntax.
-You must return nothing but a JSON in the same format as given in headers data.
+            "role": "user", 
+            "content": f"""Your task is to revise the given headers JSON based on the guidelines provided.
+You are to follow the guidelines but the values should be in simple strings, ignoring all markdown syntax. 
+You must return a JSON in the same format as the input headers data.
 Guidelines: {task.get("guidelines")}\n
 Headers Data: {headers}\n
 """
@@ -84,9 +83,9 @@ Headers Data: {headers}\n
         if research_state.get("task").get("verbose"):
             print_agent_output(research_layout_content, agent="WRITER")
 
-        headers = self.get_headers(research_state)
+        headers = self.get_headers(research_state)  
         if research_state.get("task").get("follow_guidelines"):
-            print_agent_output("Rewriting layout based on guidelines...", agent="WRITER")
+            print_agent_output("Rewriting report structure based on guidelines...", agent="WRITER") 
             headers = self.revise_headers(task=research_state.get("task"), headers=headers).get("headers")
 
         return {**research_layout_content, "headers": headers}
